@@ -1,6 +1,7 @@
 console.log("index js file")
 const redux = require('redux')
 const createStore=redux.createStore
+const combinereducer=redux.combineReducers
 // import { createStore } from 'redux'
 //initialize action
 const CAKE_ORDERED='CAKE_ORDERED'
@@ -47,11 +48,19 @@ function restockicecream (qty=1){
 
 //reducer
 //representing initial state in a single obj
-const initilState={
+// const initilState={
+//     numofCakes:10,
+//     numoficecream:20 //initial state of icecream
+// }
+
+const initialCakeState={
     numofCakes:10,
-    numoficecream:20 //initial state of icecream
 }
-const reducer=(state=initilState,action)=>{
+
+const initialIcecreamState={
+    numoficecream:20
+}
+const reducercake=(state=initialCakeState,action)=>{
 switch(action.type){
     case CAKE_ORDERED:
         return{
@@ -63,23 +72,40 @@ switch(action.type){
             ...state,
             numofCakes:state.numofCakes+action.payload
         }
-        case ICECREAM_ORDERED:
-        return{
-            ...state,
-            numoficecream:state.numoficecream-action.payload
-        }
-        case ICECREAM_RESTOCKED:
-        return{
-            ...state,
-            numoficecream:state.numoficecream+action.payload
-        }
+      
         default: return state;
 }
 }
 
 
+
+const reducericecream=(state=initialIcecreamState,action)=>{
+    switch(action.type){
+       
+            case ICECREAM_ORDERED:
+            return{
+                ...state,
+                numoficecream:state.numoficecream-action.payload
+            }
+            case ICECREAM_RESTOCKED:
+            return{
+                ...state,
+                numoficecream:state.numoficecream+action.payload
+            }
+            default: return state;
+    }
+    }
+
+
+
 //1. creating store
-const store=createStore(reducer)  //store holds the state of the app
+//combining reducers
+const rootreducer=combinereducer({
+    cake:reducercake,
+    icecream:reducericecream
+})
+const store=createStore(rootreducer)  
+//store holds the state of the app
 
 //2.
 console.log(store.getState()) //gives state of the app
@@ -88,6 +114,8 @@ console.log(store.getState()) //gives state of the app
 //4.
 const unsubscribe=store.subscribe(()=>{
     console.log(store.getState())  //we are regiustering the listener 
+    console.log(store.getState().cake)  //only cakes
+    console.log(store.getState().icecream)  //only icecream
 })
 
 //3. dispatch(action)
