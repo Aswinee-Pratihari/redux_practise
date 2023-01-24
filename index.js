@@ -7,6 +7,9 @@ const CAKE_ORDERED='CAKE_ORDERED'
 
 const CAKE_RESTOCKED='CAKE_RESTOCKED'
 
+//actions for icecream
+const ICECREAM_ORDERED='ICECREAM_ORDERED'
+const ICECREAM_RESTOCKED='ICECREAM_RESTOCKED'
 //
 function restock(qty=1) {
    return {
@@ -25,11 +28,28 @@ function ordercake () {
     }
 }
 
+
+//action creator for icecream
+function ordericecream (qty){
+    return{
+        type:ICECREAM_ORDERED,
+        payload:qty
+    }
+}
+
+function restockicecream (qty=1){
+    return{
+        type:ICECREAM_RESTOCKED,
+        payload:qty
+    }
+}
+
+
 //reducer
 //representing initial state in a single obj
 const initilState={
-    numofCakes:10
-
+    numofCakes:10,
+    numoficecream:20 //initial state of icecream
 }
 const reducer=(state=initilState,action)=>{
 switch(action.type){
@@ -42,6 +62,16 @@ switch(action.type){
         return{
             ...state,
             numofCakes:state.numofCakes+action.payload
+        }
+        case ICECREAM_ORDERED:
+        return{
+            ...state,
+            numoficecream:state.numoficecream-action.payload
+        }
+        case ICECREAM_RESTOCKED:
+        return{
+            ...state,
+            numoficecream:state.numoficecream+action.payload
         }
         default: return state;
 }
@@ -69,11 +99,14 @@ const unsubscribe=store.subscribe(()=>{
 // store.dispatch(restock(3))
 
 //actionbinder
-const actions=redux.bindActionCreators({ordercake,restock},store.dispatch)
+const actions=redux.bindActionCreators({ordercake,restock,ordericecream,restockicecream},store.dispatch)
 actions.ordercake()
 actions.ordercake()
 actions.ordercake()
 actions.restock(3)
+
+actions.ordericecream(3)
+actions.restockicecream(4)
 //5. unsubscribe
 unsubscribe()
 
